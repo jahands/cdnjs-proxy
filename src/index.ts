@@ -46,17 +46,20 @@ export default {
 			console.log('using upstream')
 			const upstreamRequest = new Request(upstream + url.pathname, request)
 			response = await fetch(upstreamRequest)
-			ctx.waitUntil(env.KVCACHE.put(url.pathname, await response.clone().arrayBuffer(), {
-				metadata: {
-					headers: {
-						'Cache-Control': response.headers.get('Cache-Control') || 'public, max-age=30672000',
-						'Cache-Control-Allow-Origin': '*'
-					}
-				},
-			}))
+			if (response.ok) {
+				ctx.waitUntil(env.KVCACHE.put(url.pathname, await response.clone().arrayBuffer(), {
+					metadata: {
+						headers: {
+							'Cache-Control': response.headers.get('Cache-Control') || 'public, max-age=30672000',
+							'Cache-Control-Allow-Origin': '*'
+						}
+					},
+				}))
+			}
 		}
-
-		ctx.waitUntil(cache.put(request, response.clone()))
+		if (response.ok) {
+			ctx.waitUntil(cache.put(request, response.clone()))
+		}
 		return response
 	},
 };
