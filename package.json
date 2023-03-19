@@ -13,6 +13,6 @@
     "deploy": "wrangler publish",
     "test": "vitest",
     "start-persist": "wrangler dev --local --persist-to ./data",
-    "replit-run-command": "npm run start"
+    "replit-run-command": "npm run deploy"
   }
 }
