@@ -1,3 +1,8 @@
 name = "cdnjs-proxy"
 main = "src/index.ts"
 compatibility_date = "2023-03-19"
+usage_model = "unbound"
+
+kv_namespaces = [
+  { binding = "KVCACHE", id = "2adb3ec80ba642ea9f2a998b99a7a238" }
+]
