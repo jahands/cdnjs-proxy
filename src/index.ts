@@ -1,3 +1,5 @@
+import pRetry from 'p-retry';
+
 import { Env } from "./types"
 
 const upstream = 'https://cdnjs.cloudflare.com'
@@ -17,13 +19,16 @@ export default {
 			return new Response('Not Found', { status: 404 })
 		}
 		const cache = caches.default
-		const cached = await cache.match(request)
+		const cached = await pRetry(() => cache.match(request), { retries: 5, minTimeout: 300 })
 		if (cached) {
 			console.log('using edge cache')
 			return cached
 		}
 
-		const kvRes = await env.KVCACHE.getWithMetadata<KVMetadata>(url.pathname)
+		const kvRes = await pRetry(() =>
+			env.KVCACHE.getWithMetadata<KVMetadata>(url.pathname),
+			{ retries: 5, minTimeout: 300 })
+
 		let response: Response
 		if (kvRes.value) {
 			const headers = new Headers({

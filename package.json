@@ -14,5 +14,8 @@
     "test": "vitest",
     "start-persist": "wrangler dev --local --persist-to ./data",
     "replit-run-command": "npm run deploy"
+  },
+  "dependencies": {
+    "p-retry": "^5.1.2"
   }
 }
