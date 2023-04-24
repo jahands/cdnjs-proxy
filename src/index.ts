@@ -47,12 +47,21 @@ export default {
 			const upstreamRequest = new Request(upstream + url.pathname, request)
 			response = await fetch(upstreamRequest)
 			if (response.ok) {
+				const headers: Record<string, string> = {
+					'Cache-Control': response.headers.get('Cache-Control') || 'public, max-age=30672000',
+					'Cache-Control-Allow-Origin': '*'
+				}
+				const contentType = response.headers.get('Content-Type')
+				if (contentType) {
+					headers['Content-Type'] = contentType
+				}
+				const etag = response.headers.get('ETag')
+				if (etag) {
+					headers['ETag'] = etag
+				}
 				ctx.waitUntil(env.KVCACHE.put(url.pathname, await response.clone().arrayBuffer(), {
 					metadata: {
-						headers: {
-							'Cache-Control': response.headers.get('Cache-Control') || 'public, max-age=30672000',
-							'Cache-Control-Allow-Origin': '*'
-						}
+						headers
 					},
 				}))
 			}
